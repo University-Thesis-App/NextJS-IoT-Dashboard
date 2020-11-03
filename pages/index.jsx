@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import api from '../api';
 import React from 'react';
-import { Button, Typography, Toolbar, AppBar, IconButton, makeStyles, Drawer, Divider, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { Button, Typography, Toolbar, AppBar, IconButton, makeStyles, Card, Grid, Drawer, Divider, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { Menu, Home as HomeIcon, Person, DevicesOther, ChevronRight } from '@material-ui/icons';
 import clsx from "clsx";
 
@@ -69,7 +69,10 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 0
   },
   main: {
-    marginTop: 100
+    marginTop: 100,
+  },
+  layout: {
+    margin: `0 ${theme.spacing()}`
   }
 }));
 
@@ -152,9 +155,12 @@ export default function Home() {
           </ListItem>
         </List>
       </Drawer>
-      <ul className={classes.main}>
-        {devices.map((device) => <li key={device.id}>{device.token}</li>)}
-      </ul>
+      <Grid className={classes.layout} container justify="center" spacing={3}>
+        {devices.map((device) =>
+          <Grid item xs={6} >
+            <Card key={device.id}>{device.token}</Card>
+          </Grid>)}
+      </Grid>
     </div>
   )
 }
