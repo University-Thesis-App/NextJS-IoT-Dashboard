@@ -67,15 +67,28 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen
     }),
     marginLeft: 0
+  },
+  main: {
+    marginTop: 100
   }
 }));
 
 export default function Home() {
-  useEffect(() => {
-    api.get('/api/devices').then(console.log).catch(console.log)
-  }, []);
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [devices, setDevices] = React.useState([]);
+
+  useEffect(() => {
+    // const interval = setInterval(() => {
+    api.get('/api/devices').then((response) => {
+      console.log(response.data.data);
+      setDevices(response.data.data);
+    }).catch(console.log)
+    // }, 5000);
+
+    // return () => clearInterval(interval);
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -139,7 +152,9 @@ export default function Home() {
           </ListItem>
         </List>
       </Drawer>
-
+      <ul className={classes.main}>
+        {devices.map((device) => <li key={device.id}>{device.token}</li>)}
+      </ul>
     </div>
   )
 }
