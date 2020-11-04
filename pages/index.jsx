@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
 import api from '../api';
 import React from 'react';
-import { Button, Typography, Toolbar, AppBar, IconButton, makeStyles, Card, Grid, Drawer, Divider, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Menu, Home as HomeIcon, Person, DevicesOther, ChevronRight } from '@material-ui/icons';
-import clsx from "clsx";
+import { makeStyles, Card, Grid } from '@material-ui/core';
 
 const drawerWidth = 240;
 
