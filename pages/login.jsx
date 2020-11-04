@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Paper, withStyles, Grid, TextField, Button, FormControlLabel, Checkbox, Typography } from '@material-ui/core';
+import Link from 'next/link'
+
+import { Paper, withStyles, Grid, TextField, Button, Link as MLink, FormControlLabel, Checkbox, Typography } from '@material-ui/core';
 import api from '../api';
 
 const styles = theme => ({
@@ -37,7 +39,8 @@ function Login({ classes }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    function login() {
+    function loginHandler(event) {
+        event.preventDefault();
         api.get('/sanctum/csrf-cookie').then(() => {
             api.post('/login', { email, password }).then(response => {
                 console.log(response);
@@ -49,8 +52,8 @@ function Login({ classes }) {
         <div className={classes.pageWrapper}>
             <Paper className={classes.maxWidth}>
                 <div className={classes.margin}>
-                    <form className={classes.form} noValidate>
-                        <Grid container spacing={4} alignItems="flex-end">
+                    <form className={classes.form} onSubmit={loginHandler}>
+                        <Grid spacing={4} alignItems="flex-end">
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.input}
@@ -61,8 +64,7 @@ function Login({ classes }) {
                                     value={email} onChange={(event) => setEmail(event.target.value)} />
                             </Grid>
                         </Grid>
-                        <Grid container spacing={8} alignItems="flex-end">
-
+                        <Grid spacing={8} alignItems="flex-end">
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.input} id="password" label="Password" type="password" fullWidth required
@@ -70,14 +72,12 @@ function Login({ classes }) {
                                 />
                             </Grid>
                         </Grid>
-                        <Grid container justify="center" className={classes.marginTop}>
-                            <Button fullWidth variant="outlined" color="primary" style={{ textTransform: "none" }} onClick={login}>Login</Button>
+                        <Grid className={classes.marginTop}>
+                            <Button type="submit"
+                                fullWidth variant="outlined" color="primary">Login</Button>
                         </Grid>
-                        <Grid container justify="center" className={classes.marginTop}>
-                            <Button fullWidth variant="outlined" color="primary" style={{ textTransform: "none" }} onClick={login}>SignUp</Button>
-                        </Grid>
+                        <Link href="/register"><MLink>Register</MLink></Link>
                     </form>
-
                 </div>
             </Paper>
         </div>

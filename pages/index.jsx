@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 import api from '../api';
 import React from 'react';
-import { makeStyles, Card, Grid } from '@material-ui/core';
+import { Button, Typography, Toolbar, AppBar, IconButton, makeStyles, Card, Grid, Drawer, Divider, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { Menu, Home as HomeIcon, Person, DevicesOther, ChevronRight } from '@material-ui/icons';
+import clsx from "clsx";
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,11 +23,34 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen
     })
   },
+  appBarShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
   menuButton: {
     marginRight: theme.spacing(2)
   },
   hide: {
     display: "none"
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0
+  },
+  drawerPaper: {
+    width: drawerWidth
+  },
+  drawerHeader: {
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: "flex-end"
   },
   content: {
     flexGrow: 1,
@@ -51,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home() {
 
+  const classes = useStyles();
 
   const [devices, setDevices] = React.useState([]);
 
@@ -65,44 +93,21 @@ export default function Home() {
     // return () => clearInterval(interval);
   }, []);
 
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
   return (
-    <div>
-      <Grid justify="center" spacing={3}>
+    <div className={classes.root}>
+      <Grid className={classes.layout} container justify="center" spacing={3}>
         {devices.map((device) =>
-          <Grid item xs={6} >
-            <Card key={device.id}>{device.token}</Card>
+          <Grid item xs={6} key={device.id}>
+            <Card>{device.token}</Card>
           </Grid>)}
       </Grid>
-
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <Chart />
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Deposits />
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Orders />
-              </Paper>
-            </Grid>
-          </Grid>
-          <Box pt={4}>
-            <Copyright />
-          </Box>
-        </Container>
-      </main>
     </div>
   )
 }

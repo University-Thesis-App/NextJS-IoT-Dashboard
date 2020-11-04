@@ -7,6 +7,7 @@ import theme from '../theme';
 import { Button, Typography, Toolbar, AppBar, IconButton, makeStyles, Card, Grid, Drawer, Divider, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { Menu, Home as HomeIcon, Person, DevicesOther, ChevronRight } from '@material-ui/icons';
 import clsx from "clsx";
+import api from '../api';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -100,6 +101,12 @@ export default function MyApp(props) {
     setOpen(false);
   };
 
+  const logout = () => {
+    api.post('/logout').then(response => {
+      console.log(response);
+    }).catch(console.log)
+  }
+
   return (
     <React.Fragment>
       <Head>
@@ -123,7 +130,7 @@ export default function MyApp(props) {
               <Typography variant="h6" className={classes.title}>
                 IoT Dashboard
           </Typography>
-              <Button color="inherit">Logout</Button>
+              <Button color="inherit" onClick={logout}>Logout</Button>
             </Toolbar>
           </AppBar>
           <Drawer

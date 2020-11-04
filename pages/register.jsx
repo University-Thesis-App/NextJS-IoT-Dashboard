@@ -7,6 +7,7 @@ import { Grid, Paper, withStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import { useState } from 'react';
 
+import api from '../api';
 
 const styles = theme => ({
     pageWrapper: {
@@ -39,24 +40,28 @@ const styles = theme => ({
     },
 });
 
-function SignUp({ classes }) {
+function Register({ classes }) {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
-    function SignUp() {
+    function signUp(event) {
+        event.preventDefault();
+        console.log(fullName, email, password);
         api.get('/sanctum/csrf-cookie').then(() => {
-            api.post('/register', { fullname, email, password }).then(response => {
+            api.post('/register', { name: fullName, email, password, password_confirmation: passwordConfirmation }).then(response => {
                 console.log(response);
             }).catch(console.log)
         });
     }
+
     return (
         <div className={classes.pageWrapper}>
             <Paper className={classes.maxWidth}>
                 <div className={classes.margin}>
-                    <form className={classes.form} noValidate>
-                        <Grid ccontainer spacing={8} alignItems="flex-end">
+                    <form className={classes.form} onSubmit={signUp}>
+                        <Grid spacing={8} alignItems="flex-end">
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.submit}
@@ -65,10 +70,13 @@ function SignUp({ classes }) {
                                     fullWidth autoFocus required
                                     id="fullname"
                                     label="Full Name"
-                                    value={fullName} onChange={(event) => setFullName(event.target.value)} />
+                                    value={fullName}
+                                    onChange={(event) => {
+                                        setFullName(event.target.value)
+                                    }} />
                             </Grid>
                         </Grid>
-                        <Grid container spacing={8} alignItems="flex-end">
+                        <Grid spacing={8} alignItems="flex-end">
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.submit}
@@ -77,10 +85,11 @@ function SignUp({ classes }) {
                                     label="Email Address"
                                     name="email"
                                     autoComplete="email"
-                                    value={email} onChange={(event) => setEmail(event.target.value)} />
+                                    value={email}
+                                    onChange={(event) => setEmail(event.target.value)} />
                             </Grid>
                         </Grid>
-                        <Grid container spacing={8} alignItems="flex-end">
+                        <Grid spacing={8} alignItems="flex-end">
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.submit}
@@ -90,18 +99,33 @@ function SignUp({ classes }) {
                                     type="password"
                                     id="password"
                                     autoComplete="current-password"
-                                    value={password} onChange={(event) => setPassword(event.target.value)} />
+                                    value={password}
+                                    onChange={(event) => setPassword(event.target.value)} />
                             </Grid>
                         </Grid>
-                        <Grid container spacing={8} alignItems="flex-end">
+                        <Grid spacing={8} alignItems="flex-end">
+                            <Grid item md={true} sm={true} xs={true}>
+                                <TextField
+                                    className={classes.submit}
+                                    fullWidth autoFocus required
+                                    name="password_confirmation"
+                                    label="Confirmation"
+                                    type="password"
+                                    id="password_confirmation"
+                                    autoComplete="current-password"
+                                    value={passwordConfirmation}
+                                    onChange={(event) => setPasswordConfirmation(event.target.value)} />
+                            </Grid>
+                        </Grid>
+                        <Grid spacing={8} alignItems="flex-end">
                             <Grid item md={true} sm={true} xs={true}>
                                 <FormControlLabel
                                     control={<Checkbox value="allowExtraEmails" color="primary" />}
-                                    label="I want to receive inspiration, marketing promotions and updates via email."
+                                    label="I agree with the terms and services."
                                 />
                             </Grid>
                         </Grid>
-                        <Grid container justify="center" className={classes.marginTop}>
+                        <Grid className={classes.marginTop}>
                             <Button
                                 type="submit"
                                 fullWidth
@@ -110,16 +134,13 @@ function SignUp({ classes }) {
                                 className={classes.submit}
                             >
                                 Sign Up
-          </Button>
+                            </Button>
                         </Grid>
                     </form>
-
-                    <Box mt={5}>
-                    </Box>
                 </div>
             </Paper>
         </div >
 
     )
 }
-export default withStyles(styles)(SignUp);
+export default withStyles(styles)(Register);
