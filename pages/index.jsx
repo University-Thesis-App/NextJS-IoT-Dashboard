@@ -1,9 +1,16 @@
 import { useEffect } from 'react';
 import api from '../api';
 import React from 'react';
-import { makeStyles, Card, Grid } from '@material-ui/core';
+import { makeStyles, Card, Grid, Container, Paper, Typography } from '@material-ui/core';
+import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { useTheme } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 const drawerWidth = 240;
+
+function pad2(n) {
+  return n > 9 ? "" + n : "0" + n;
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,29 +73,60 @@ const useStyles = makeStyles((theme) => ({
     }),
     marginLeft: 0
   },
-  main: {
-    marginTop: 100,
-  },
+  appBarSpacer: theme.mixins.toolbar,
   layout: {
     margin: `0 ${theme.spacing()}`
-  }
+  },
+  content: {
+    flexGrow: 1,
+    height: '100vh',
+    overflow: 'auto',
+  },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
+  paper: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column',
+  },
+  fixedHeight: {
+    height: 240,
+  },
 }));
 
 export default function Home() {
 
+  const theme = useTheme();
+
   const classes = useStyles();
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   const [devices, setDevices] = React.useState([]);
 
   useEffect(() => {
-    // const interval = setInterval(() => {
     api.get('/api/devices').then((response) => {
-      console.log(response.data.data);
-      setDevices(response.data.data);
-    }).catch(console.log)
-    // }, 5000);
+      const formatted = response.data.data.map(device => {
+        const latestMetrics = device.latest_metrics.reduce((acc, metric) => {
+          Object.keys(metric.values).forEach(v => {
+            if (!Array.isArray(acc[v])) {
+              acc[v] = [];
+            }
 
-    // return () => clearInterval(interval);
+            console.log(new Date(metric.date * 1000));
+            const date = new Date(metric.date * 1000);
+            acc[v].push({ date: `${pad2(date.getHours())}:${pad2(date.getMinutes())}`, value: metric.values[v] })
+          });
+
+          return acc;
+        }, {});
+
+        return { ...device, latest_metrics: latestMetrics };
+      });
+      setDevices(formatted);
+    }).catch(console.log)
   }, []);
 
   const handleDrawerOpen = () => {
@@ -99,20 +137,57 @@ export default function Home() {
     setOpen(false);
   };
   return (
-    <div className={classes.root}>
-      <Grid className={classes.layout} container justify="center" spacing={3}>
-        {devices.map((device) =>
-          <Grid item xs={6} key={device.id}>
-            <Card>{device.token}</Card>
-          </Grid>)}
-      </Grid>
-    </div>
+    <main className={classes.content}>
+      <div className={classes.appBarSpacer} />
+      <Container maxWidth="lg" className={classes.container}>
+        <Grid container spacing={3}>
+          {devices.map(device => {
+            console.log(device);
+            return Object.keys(device.latest_metrics).map(key => (
+              <Chart title={device.name} key={`${device.id}_${key}`} theme={theme} data={device.latest_metrics[key]} label={device.variables.find(v => v.name === key).label} fixedHeightPaper={fixedHeightPaper} />
+            ))
+          })}
+        </Grid>
+      </Container>
+    </main>
   )
 }
 
 
-
-
+function Chart({ data, label, fixedHeightPaper, theme, title }) {
+  return (
+    <Grid item xs={6} md={6} lg={6}>
+      <Paper className={fixedHeightPaper}>
+        <Typography component="h2" variant="h6" color="primary" gutterBottom>
+          {title}
+        </Typography>
+        <ResponsiveContainer>
+          <LineChart
+            data={data}
+            margin={{
+              top: 16,
+              right: 16,
+              bottom: 0,
+              left: 24,
+            }}
+          >
+            <XAxis dataKey="date" stroke={theme.palette.text.secondary} />
+            <YAxis stroke={theme.palette.text.secondary}>
+              <Label
+                angle={270}
+                position="left"
+                style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
+              >
+                {label}
+              </Label>
+            </YAxis>
+            <Line type="monotone" dataKey="value" stroke={theme.palette.primary.main} dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </Paper>
+    </Grid>
+  );
+}
 
 //todo: after authentication should check if the user is authedicated or not
 // export async function getServerSideProps({ res, params }) {

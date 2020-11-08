@@ -21,6 +21,7 @@ import {
 } from '@material-ui/core';
 import CreateDevice from '../../components/CreateDevice';
 import generate from '../../codeGenerator';
+import GenerateCode from '../../components/GenerateCode';
 
 const useStyles = makeStyles({
     container: {
@@ -34,6 +35,7 @@ const useStyles = makeStyles({
 export default function Devices() {
     const [devices, setDevices] = React.useState([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [selectedDevice, setSelectedDevice] = useState(null);
     const classes = useStyles();
 
     useEffect(() => {
@@ -62,15 +64,25 @@ export default function Devices() {
                                     {row.name}
                                 </TableCell>
                                 <TableCell >{row.token}</TableCell>
-                                <TableCell align="right"><Button onClick={() => {
-                                    console.log(generate(row.token, row.variables))
-                                }}><Code /></Button><Edit /> <Delete /></TableCell>
+                                <TableCell align="right">
+                                    <Button onClick={() => {
+                                        setSelectedDevice(row)
+                                        // console.log(generate(row.token, row.variables))
+                                    }}><Code /></Button>
+                                    <Button onClick={() => { }}><Edit /> </Button>
+                                    <Button onClick={() => {
+                                        api.delete('/api/devices/' + row.id).then(() => {
+                                            setDevices(devices => devices.filter(device => device.id !== row.id));
+                                        })
+                                    }}><Delete /></Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            {createModalOpen && <CreateDevice open={createModalOpen} handleClose={() => setCreateModalOpen(false)} />}
-        </div>
+            { createModalOpen && <CreateDevice open={createModalOpen} handleClose={() => setCreateModalOpen(false)} />}
+            { selectedDevice && <GenerateCode open={selectedDevice} handleClose={() => setSelectedDevice(null)} />}
+        </div >
     );
 }

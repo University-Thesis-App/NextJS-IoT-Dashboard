@@ -36,8 +36,8 @@ export default function generate(token, variables) {
     
         # Processes results
         if status >= 400:
-            print("[ERROR] Could not send data after 5 attempts, please check \
-                your token credentials and internet connection")
+            print("[ERROR] Could not send data after 5 attempts, please check
+            your token credentials and internet connection")
             return False
     
         print("[INFO] request made properly, your device is updated")

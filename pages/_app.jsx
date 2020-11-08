@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
+import Link from 'next/link';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import theme from '../theme';
@@ -149,18 +150,22 @@ export default function MyApp(props) {
             </div>
             <Divider />
             <List>
-              <ListItem button key={"Home"}>
-                <ListItemIcon>
-                  <HomeIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Home"} />
-              </ListItem>
-              <ListItem button key={"Devices"}>
-                <ListItemIcon>
-                  <DevicesOther />
-                </ListItemIcon>
-                <ListItemText primary={"Devices"} />
-              </ListItem>
+              <Link href="/">
+                <ListItem button key={"Home"}>
+                  <ListItemIcon>
+                    <HomeIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={"Home"} />
+                </ListItem>
+              </Link>
+              <Link href="/devices">
+                <ListItem button key={"Devices"}>
+                  <ListItemIcon>
+                    <DevicesOther />
+                  </ListItemIcon>
+                  <ListItemText primary={"Devices"} />
+                </ListItem>
+              </Link>
               <ListItem button key={"Profile"}>
                 <ListItemIcon>
                   <Person />
