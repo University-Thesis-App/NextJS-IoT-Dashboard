@@ -82,7 +82,6 @@ function Devices() {
                                 <TableCell align="right">
                                     <Button onClick={() => {
                                         setSelectedDevice(row)
-                                        // console.log(generate(row.token, row.variables))
                                     }}><Code /></Button>
                                     <Button onClick={() => {
                                         setEditDevice(row);

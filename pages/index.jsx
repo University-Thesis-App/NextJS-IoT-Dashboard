@@ -6,6 +6,7 @@ import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGri
 import { useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import withAuth from '../components/withAuth';
+import Link from 'next/link';
 
 const drawerWidth = 240;
 
@@ -116,7 +117,6 @@ function Home() {
               acc[v] = [];
             }
 
-            console.log(new Date(metric.date * 1000));
             const date = new Date(metric.date * 1000);
             acc[v].push({ date: `${pad2(date.getHours())}:${pad2(date.getMinutes())}`, value: metric.values[v] })
           });
@@ -143,25 +143,29 @@ function Home() {
       <Container maxWidth="lg" className={classes.container}>
         <Grid container spacing={3}>
           {devices.map(device => {
-            console.log(device);
             return Object.keys(device.latest_metrics).map(key => (
-              <Chart title={device.name} key={`${device.id}_${key}`} theme={theme} data={device.latest_metrics[key]} label={device.variables.find(v => v.name === key).label} fixedHeightPaper={fixedHeightPaper} />
+              <Chart key={`${device.id}_${key}`} id={device.id} title={device.name} theme={theme} data={device.latest_metrics[key]} label={device.variables.find(v => v.name === key).label} fixedHeightPaper={fixedHeightPaper} />
             ))
           })}
         </Grid>
       </Container>
-    </main>
+    </main >
   )
 }
 
 
-function Chart({ data, label, fixedHeightPaper, theme, title }) {
+function Chart({ data, label, fixedHeightPaper, theme, title, id }) {
   return (
+
     <Grid item xs={6} md={6} lg={6}>
       <Paper className={fixedHeightPaper}>
-        <Typography component="h2" variant="h6" color="primary" gutterBottom>
-          {title}
-        </Typography>
+        <Link href={`/devices/${id}`}>
+          <a>
+            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+              {title}
+            </Typography>
+          </a>
+        </Link>
         <ResponsiveContainer>
           <LineChart
             data={data}
