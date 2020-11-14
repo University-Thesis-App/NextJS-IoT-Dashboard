@@ -39,19 +39,37 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const Input = ({ field, form: { errors } }) => {
+const Input = ({ field, form: { errors }, placeholder }) => {
     const errorMessage = getIn(errors, field.name);
 
     return (
         <>
-            <TextField {...field} />
+            <TextField {...field} placeholder={placeholder} />
             {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
         </>
     );
 };
 
-export default function EditDevice(props) {
+const initialValues = {
+    name: '',
+    variables: [{ id: generate(), name: '', label: '', }]
+};
+
+export default function ManageDevice(props) {
+    const isCreate = !props.device;
     const classes = useStyles();
+
+    function updateDevice(values) {
+        api.patch(`/api/devices/${props.device.id}`, values).then(response => {
+            props.handleClose('update', response.data.data)
+        }).catch(console.log)
+    }
+
+    function createDevice(values) {
+        api.post('/api/devices', values).then(response => {
+            props.handleClose('create', response.data.data)
+        }).catch(console.log)
+    }
 
     return (
         <div className={classes.root}>
@@ -66,20 +84,20 @@ export default function EditDevice(props) {
                     className={classes.paper}
                 >
                     <Formik
-                        initialValues={{
-                            name: '',
-                            variables: [{ id: generate(), name: '', label: '', }]
-                        }}
-                        onSubmit={async (values) => {
-                            console.log(values);
-                            api.post('/api/devices', values).then(response => {
-                                console.log(response);
-                            }).catch(console.log)
+                        initialValues={isCreate ? initialValues : props.device}
+                        onSubmit={(values) => {
+                            if (isCreate) {
+                                createDevice(values);
+                            }
+
+                            if (!isCreate) {
+                                updateDevice(values);
+                            }
                         }}
                     >
                         {({ values, errors }) => (
                             <Form>
-                                <Field name="name" component={Input} placeholder="Device name" />
+                                <Field name="name" placeholder="Device name" component={Input} />
 
                                 <FieldArray name="variables">
                                     {({ push, remove }) => (
@@ -113,7 +131,7 @@ export default function EditDevice(props) {
                                     )}
                                 </FieldArray>
 
-                                <Button type="submit">Edit device</Button>
+                                <Button type="submit">{isCreate ? 'Create' : 'Update'} device</Button>
                             </Form>
                         )}
                     </Formik>

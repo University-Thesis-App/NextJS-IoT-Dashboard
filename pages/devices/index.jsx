@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Formik, Field, Form } from 'formik';
 import api from '../../api';
 import { makeStyles } from '@material-ui/core/styles';
 import { Edit, Delete, Code } from '@material-ui/icons';
 
 import {
     Button,
-    LinearProgress,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    FormControlLabel,
     Table,
     TableBody,
     TableCell,
@@ -19,7 +13,7 @@ import {
     TableRow,
     Paper,
 } from '@material-ui/core';
-import CreateDevice from '../../components/CreateDevice';
+import ManageDevice from '../../components/ManageDevice';
 import generate from '../../codeGenerator';
 import GenerateCode from '../../components/GenerateCode';
 
@@ -36,14 +30,35 @@ export default function Devices() {
     const [devices, setDevices] = React.useState([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
+    const [editDevice, setEditDevice] = useState(null);
+
     const classes = useStyles();
 
     useEffect(() => {
         api.get('/api/devices').then((response) => {
-            console.log(response.data.data);
             setDevices(response.data.data);
         }).catch(console.log)
     }, []);
+
+    function handleClose(mode, values) {
+        if (mode === 'create') {
+            setCreateModalOpen(false);
+            setDevices([values, ...devices]);
+        }
+
+        if (mode === 'update') {
+            setEditDevice(null);
+            console.log(values);
+            const updatedDevices = devices.map(d => {
+                if (d.id === values.id) {
+                    return values;
+                }
+
+                return d;
+            })
+            setDevices(updatedDevices);
+        }
+    }
 
     return (
         <div className={classes.container}>
@@ -69,7 +84,9 @@ export default function Devices() {
                                         setSelectedDevice(row)
                                         // console.log(generate(row.token, row.variables))
                                     }}><Code /></Button>
-                                    <Button onClick={() => { }}><Edit /> </Button>
+                                    <Button onClick={() => {
+                                        setEditDevice(row);
+                                    }}><Edit /> </Button>
                                     <Button onClick={() => {
                                         api.delete('/api/devices/' + row.id).then(() => {
                                             setDevices(devices => devices.filter(device => device.id !== row.id));
@@ -81,7 +98,9 @@ export default function Devices() {
                     </TableBody>
                 </Table>
             </TableContainer>
-            { createModalOpen && <CreateDevice open={createModalOpen} handleClose={() => setCreateModalOpen(false)} />}
+            { createModalOpen && <ManageDevice open={createModalOpen} handleClose={handleClose} />}
+            { editDevice && <ManageDevice open={editDevice} device={editDevice} handleClose={handleClose} />}
+
             { selectedDevice && <GenerateCode open={selectedDevice} handleClose={() => setSelectedDevice(null)} />}
         </div >
     );
