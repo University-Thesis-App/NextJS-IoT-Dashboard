@@ -9,6 +9,7 @@ import { Button, Typography, Toolbar, AppBar, IconButton, makeStyles, Card, Grid
 import { Menu, Home as HomeIcon, Person, DevicesOther, ChevronRight } from '@material-ui/icons';
 import clsx from "clsx";
 import api from '../api';
+import { logOut } from '../auth'
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -104,7 +105,7 @@ export default function MyApp(props) {
 
   const logout = () => {
     api.post('/logout').then(response => {
-      console.log(response);
+      logOut();
     }).catch(console.log)
   }
 

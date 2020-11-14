@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link'
-
+import { logIn } from '../auth'
 import { Paper, withStyles, Grid, TextField, Button, Link as MLink, FormControlLabel, Checkbox, Typography } from '@material-ui/core';
 import api from '../api';
 
@@ -43,7 +43,7 @@ function Login({ classes }) {
         event.preventDefault();
         api.get('/sanctum/csrf-cookie').then(() => {
             api.post('/login', { email, password }).then(response => {
-                console.log(response);
+                logIn();
             }).catch(console.log)
         });
     }

@@ -5,6 +5,7 @@ import { makeStyles, Card, Grid, Container, Paper, Typography } from '@material-
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
+import withAuth from '../components/withAuth';
 
 const drawerWidth = 240;
 
@@ -97,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+function Home() {
 
   const theme = useTheme();
 
@@ -189,16 +190,4 @@ function Chart({ data, label, fixedHeightPaper, theme, title }) {
   );
 }
 
-//todo: after authentication should check if the user is authedicated or not
-// export async function getServerSideProps({ res, params }) {
-//   try {
-//     const response = await api.get('/api/devices');
-//     console.log(response);
-//     return { props: {} }
-//   } catch (error) {
-//     console.log(error);
-//   }
-//   // res.statusCode = 307
-//   // res.setHeader('Location', `/login`)
-//   return { props: {} }
-// }
+export default withAuth(Home);

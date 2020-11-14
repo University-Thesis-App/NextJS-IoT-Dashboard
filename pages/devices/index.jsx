@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api';
 import { makeStyles } from '@material-ui/core/styles';
 import { Edit, Delete, Code } from '@material-ui/icons';
+import withAuth from '../../components/withAuth';
 
 import {
     Button,
@@ -14,7 +15,6 @@ import {
     Paper,
 } from '@material-ui/core';
 import ManageDevice from '../../components/ManageDevice';
-import generate from '../../codeGenerator';
 import GenerateCode from '../../components/GenerateCode';
 
 const useStyles = makeStyles({
@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     },
 });
 
-export default function Devices() {
+function Devices() {
     const [devices, setDevices] = React.useState([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
@@ -105,3 +105,5 @@ export default function Devices() {
         </div >
     );
 }
+
+export default withAuth(Devices);
