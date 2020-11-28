@@ -11,6 +11,7 @@ import clsx from "clsx";
 import api from '../api';
 import { logOut } from '../auth'
 import { isLoggedIn } from '../auth'
+import Cookies from 'js-cookie'
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -88,6 +89,7 @@ function MyApp(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const { Component, pageProps } = props;
+  const isLoggedIn = React.useRef(false);
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -95,6 +97,7 @@ function MyApp(props) {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
+    isLoggedIn.current = !!Cookies.get('ticket_management_is_user_logged_in')
   }, []);
 
   const handleDrawerOpen = () => {
@@ -120,7 +123,7 @@ function MyApp(props) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className={classes.root}>
-          {props.isLoggedIn && <>
+          {isLoggedIn && <>
             <AppBar position="fixed"
               className={clsx(classes.appBar, {
                 [classes.appBarShift]: open
