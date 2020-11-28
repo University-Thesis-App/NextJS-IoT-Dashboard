@@ -38,13 +38,18 @@ const styles = theme => ({
 function Login({ classes }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(false);
 
     function loginHandler(event) {
         event.preventDefault();
+        setError(false);
         api.get('/sanctum/csrf-cookie').then(() => {
-            api.post('/login', { email, password }).then(response => {
-                logIn();
-            }).catch(console.log)
+            api.post('/login', { email, password })
+                .then(logIn)
+                .catch((error) => {
+                    setError(true);
+                    console.log(error?.response?.data);
+                });
         });
     }
 
@@ -53,20 +58,23 @@ function Login({ classes }) {
             <Paper className={classes.maxWidth}>
                 <div className={classes.margin}>
                     <form className={classes.form} onSubmit={loginHandler}>
-                        <Grid spacing={4} alignItems="flex-end">
+                        <Grid>
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.input}
                                     id="email"
                                     label="Email"
                                     type="email"
-                                    fullWidth autoFocus required
+                                    fullWidth autoFocus
+                                    error={error}
+                                    helperText={error && 'Incorrect credentials.'}
                                     value={email} onChange={(event) => setEmail(event.target.value)} />
                             </Grid>
                         </Grid>
-                        <Grid spacing={8} alignItems="flex-end">
+                        <Grid>
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
+                                    error={error}
                                     className={classes.input} id="password" label="Password" type="password" fullWidth required
                                     value={password} onChange={(event) => setPassword(event.target.value)}
                                 />
