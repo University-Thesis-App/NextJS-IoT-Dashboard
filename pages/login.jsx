@@ -65,7 +65,7 @@ function Login({ classes }) {
                                     id="email"
                                     label="Email"
                                     type="email"
-                                    fullWidth autoFocus
+                                    fullWidth autoFocus required
                                     error={error}
                                     helperText={error && 'Incorrect credentials.'}
                                     value={email} onChange={(event) => setEmail(event.target.value)} />

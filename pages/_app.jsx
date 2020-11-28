@@ -10,6 +10,7 @@ import { Menu, Home as HomeIcon, Person, DevicesOther, ChevronRight } from '@mat
 import clsx from "clsx";
 import api from '../api';
 import { logOut } from '../auth'
+import { isLoggedIn } from '../auth'
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -82,7 +83,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function MyApp(props) {
+function MyApp(props) {
+  console.log(props);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const { Component, pageProps } = props;
@@ -118,63 +120,65 @@ export default function MyApp(props) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className={classes.root}>
-          <AppBar position="fixed"
-            className={clsx(classes.appBar, {
-              [classes.appBarShift]: open
-            })}>
-            <Toolbar>
-              <IconButton
-                className={clsx(classes.menuButton, open && classes.hide)}
-                edge="start" color="inherit" aria-label="menu" onClick={handleDrawerOpen}
-              >
-                <Menu />
-              </IconButton>
-              <Typography variant="h6" className={classes.title}>
-                IoT Dashboard
+          {props.isLoggedIn && <>
+            <AppBar position="fixed"
+              className={clsx(classes.appBar, {
+                [classes.appBarShift]: open
+              })}>
+              <Toolbar>
+                <IconButton
+                  className={clsx(classes.menuButton, open && classes.hide)}
+                  edge="start" color="inherit" aria-label="menu" onClick={handleDrawerOpen}
+                >
+                  <Menu />
+                </IconButton>
+                <Typography variant="h6" className={classes.title}>
+                  IoT Dashboard
           </Typography>
-              <Button color="inherit" onClick={logout}>Logout</Button>
-            </Toolbar>
-          </AppBar>
-          <Drawer
-            className={classes.drawer}
-            variant="persistent"
-            anchor="left"
-            open={open}
-            classes={{
-              paper: classes.drawerPaper
-            }}
-          >
-            <div className={classes.drawerHeader}>
-              <IconButton onClick={handleDrawerClose}>
-                <ChevronRight />
-              </IconButton>
-            </div>
-            <Divider />
-            <List>
-              <Link href="/">
-                <ListItem button key={"Home"}>
+                <Button color="inherit" onClick={logout}>Logout</Button>
+              </Toolbar>
+            </AppBar>
+            <Drawer
+              className={classes.drawer}
+              variant="persistent"
+              anchor="left"
+              open={open}
+              classes={{
+                paper: classes.drawerPaper
+              }}
+            >
+              <div className={classes.drawerHeader}>
+                <IconButton onClick={handleDrawerClose}>
+                  <ChevronRight />
+                </IconButton>
+              </div>
+              <Divider />
+              <List>
+                <Link href="/">
+                  <ListItem button key={"Home"}>
+                    <ListItemIcon>
+                      <HomeIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={"Home"} />
+                  </ListItem>
+                </Link>
+                <Link href="/devices">
+                  <ListItem button key={"Devices"}>
+                    <ListItemIcon>
+                      <DevicesOther />
+                    </ListItemIcon>
+                    <ListItemText primary={"Devices"} />
+                  </ListItem>
+                </Link>
+                <ListItem button key={"Profile"}>
                   <ListItemIcon>
-                    <HomeIcon />
+                    <Person />
                   </ListItemIcon>
-                  <ListItemText primary={"Home"} />
+                  <ListItemText primary={"Profile"} />
                 </ListItem>
-              </Link>
-              <Link href="/devices">
-                <ListItem button key={"Devices"}>
-                  <ListItemIcon>
-                    <DevicesOther />
-                  </ListItemIcon>
-                  <ListItemText primary={"Devices"} />
-                </ListItem>
-              </Link>
-              <ListItem button key={"Profile"}>
-                <ListItemIcon>
-                  <Person />
-                </ListItemIcon>
-                <ListItemText primary={"Profile"} />
-              </ListItem>
-            </List>
-          </Drawer>
+              </List>
+            </Drawer>
+          </>}
           <Component {...pageProps} />
         </div>
       </ThemeProvider>
@@ -182,7 +186,16 @@ export default function MyApp(props) {
   );
 }
 
+
+MyApp.getInitialProps = (context) => {
+  const isUserLoggedIn = isLoggedIn(context?.req?.headers?.cookie || '');
+
+  return { isLoggedIn: isUserLoggedIn }
+}
+
 MyApp.propTypes = {
   Component: PropTypes.elementType.isRequired,
   pageProps: PropTypes.object.isRequired,
 };
+
+export default MyApp;
