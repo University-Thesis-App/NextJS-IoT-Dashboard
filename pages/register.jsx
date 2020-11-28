@@ -45,14 +45,16 @@ function Register({ classes }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [errors, setErrors] = useState({});
 
     function signUp(event) {
         event.preventDefault();
-        console.log(fullName, email, password);
         api.get('/sanctum/csrf-cookie').then(() => {
             api.post('/register', { name: fullName, email, password, password_confirmation: passwordConfirmation }).then(response => {
                 console.log(response);
-            }).catch(console.log)
+            }).catch(err => {
+                setErrors(err?.response?.data?.errors || {});
+            })
         });
     }
 
@@ -61,9 +63,12 @@ function Register({ classes }) {
             <Paper className={classes.maxWidth}>
                 <div className={classes.margin}>
                     <form className={classes.form} onSubmit={signUp}>
-                        <Grid spacing={8} alignItems="flex-end">
+                        <Grid >
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
+                                    error={errors?.name}
+                                    helperText={errors?.name && errors?.name}
+
                                     className={classes.submit}
                                     autoComplete="fullname"
                                     name="fullname"
@@ -76,10 +81,12 @@ function Register({ classes }) {
                                     }} />
                             </Grid>
                         </Grid>
-                        <Grid spacing={8} alignItems="flex-end">
+                        <Grid >
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.submit}
+                                    error={errors?.email}
+                                    helperText={errors?.email && errors?.email}
                                     fullWidth autoFocus required
                                     id="email"
                                     label="Email Address"
@@ -89,11 +96,13 @@ function Register({ classes }) {
                                     onChange={(event) => setEmail(event.target.value)} />
                             </Grid>
                         </Grid>
-                        <Grid spacing={8} alignItems="flex-end">
+                        <Grid >
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.submit}
                                     fullWidth autoFocus required
+                                    error={errors?.password}
+                                    helperText={errors?.password && errors?.password}
                                     name="password"
                                     label="Password"
                                     type="password"
@@ -103,7 +112,7 @@ function Register({ classes }) {
                                     onChange={(event) => setPassword(event.target.value)} />
                             </Grid>
                         </Grid>
-                        <Grid spacing={8} alignItems="flex-end">
+                        <Grid >
                             <Grid item md={true} sm={true} xs={true}>
                                 <TextField
                                     className={classes.submit}
@@ -117,10 +126,10 @@ function Register({ classes }) {
                                     onChange={(event) => setPasswordConfirmation(event.target.value)} />
                             </Grid>
                         </Grid>
-                        <Grid spacing={8} alignItems="flex-end">
+                        <Grid >
                             <Grid item md={true} sm={true} xs={true}>
                                 <FormControlLabel
-                                    control={<Checkbox value="allowExtraEmails" color="primary" />}
+                                    control={<Checkbox required value="allowExtraEmails" color="primary" />}
                                     label="I agree with the terms and services."
                                 />
                             </Grid>
