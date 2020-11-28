@@ -59,16 +59,31 @@ export default function ManageDevice(props) {
     const isCreate = !props.device;
     const classes = useStyles();
 
-    function updateDevice(values) {
+    function updateDevice(values, setFieldError) {
         api.patch(`/api/devices/${props.device.id}`, values).then(response => {
             props.handleClose('update', response.data.data)
-        }).catch(console.log)
+        }).catch(
+            err => {
+                const errors = err?.response?.data?.errors;
+                handleError(errors, setFieldError);
+            }
+        )
     }
 
-    function createDevice(values) {
+    function createDevice(values, setFieldError) {
         api.post('/api/devices', values).then(response => {
             props.handleClose('create', response.data.data)
-        }).catch(console.log)
+        }).catch(err => {
+            const errors = err?.response?.data?.errors;
+            handleError(errors, setFieldError);
+        })
+    }
+
+    function handleError(errors, setFieldError) {
+        if (!errors) {
+            return;
+        }
+        Object.keys(errors).forEach(key => setFieldError(key, errors[key]));
     }
 
     return (
@@ -76,7 +91,7 @@ export default function ManageDevice(props) {
             <Modal
                 open={props.open}
                 className={classes.modal}
-                onClose={props.handleClose}
+                onClose={() => props.handleClose('close')}
                 aria-labelledby="simple-modal-title"
                 aria-describedby="simple-modal-description"
             >
@@ -85,13 +100,13 @@ export default function ManageDevice(props) {
                 >
                     <Formik
                         initialValues={isCreate ? initialValues : props.device}
-                        onSubmit={(values) => {
+                        onSubmit={(values, { setFieldError, resetForm }) => {
                             if (isCreate) {
-                                createDevice(values);
+                                createDevice(values, setFieldError);
                             }
 
                             if (!isCreate) {
-                                updateDevice(values);
+                                updateDevice(values, setFieldError);
                             }
                         }}
                     >

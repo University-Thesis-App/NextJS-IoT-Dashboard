@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../api';
 import React from 'react';
-import { makeStyles, Card, Grid, Container, Paper, Typography } from '@material-ui/core';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { makeStyles, Card, Grid, Container, Paper, Typography, Button, CircularProgress, Slider } from '@material-ui/core';
+import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
 import { useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import withAuth from '../components/withAuth';
 import Link from 'next/link';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import { Checkbox } from '@material-ui/core';
 
 const drawerWidth = 240;
 
@@ -97,6 +99,25 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+  actions: {
+    padding: theme.spacing(2),
+    marginBottom: theme.spacing(),
+  },
+  refresh: {
+
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  loader: {
+    marginRight: theme.spacing(2)
+  },
+  refreshLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row'
+  },
 }));
 
 function Home() {
@@ -107,8 +128,14 @@ function Home() {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   const [devices, setDevices] = React.useState([]);
+  const [lastReload, setLastReload] = useState(new Date());
+  const [forceRefresh, setForceRefresh] = useState(new Date().getTime());
+  const [loading, setLoading] = useState(true);
+  const [autoRefresh, setAutorefresh] = useState(true);
+  const [refreshTime, setRefreshTime] = useState(15);
 
-  useEffect(() => {
+  function fetchData() {
+    setLoading(true);
     api.get('/api/devices').then((response) => {
       const formatted = response.data.data.map(device => {
         const latestMetrics = device.latest_metrics.reduce((acc, metric) => {
@@ -127,20 +154,66 @@ function Home() {
         return { ...device, latest_metrics: latestMetrics };
       });
       setDevices(formatted);
+      setLastReload(new Date());
     }).catch(console.log)
-  }, []);
+      .finally(() => setLoading(false))
+  }
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+  useEffect(() => {
+    fetchData();
+  }, [forceRefresh]);
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  useEffect(() => {
+    if (!autoRefresh) {
+      return;
+    }
+    const interval = setInterval(() => {
+      fetchData()
+    }, refreshTime * 1000);
+    return () => clearInterval(interval);
+  }, [forceRefresh, autoRefresh, refreshTime]);
+
+  function handleRefresh() {
+    setForceRefresh(new Date().getTime());
+  }
+
+  function handleRefreshTime(e, value) {
+    setRefreshTime(value);
+  }
+
   return (
     <main className={classes.content}>
       <div className={classes.appBarSpacer} />
       <Container maxWidth="lg" className={classes.container}>
+
+        <Paper className={classes.actions}>
+          <div className={classes.refresh}>
+            <div className={classes.refreshLabel}>
+
+              Last refresh:{' '}
+              {`${lastReload.getHours()}:${lastReload.getMinutes()}:${lastReload.getSeconds()}`}
+              {loading && <div className={classes.loader}><CircularProgress size={30} /></div>}
+            </div>
+            <div>
+              Auto refresh
+<Checkbox checked={autoRefresh} onChange={() => setAutorefresh(v => !v)} />
+              <Button onClick={handleRefresh}><RefreshIcon /></Button>
+            </div>
+          </div>
+          <div>
+            Refresh every (seconds)
+          <Slider
+              value={refreshTime}
+              aria-labelledby="discrete-slider"
+              valueLabelDisplay="auto"
+              step={5}
+              marks
+              min={5}
+              max={60}
+              onChange={handleRefreshTime}
+            />
+          </div>
+        </Paper>
         <Grid container spacing={3}>
           {devices.map(device => {
             return Object.keys(device.latest_metrics).map(key => (

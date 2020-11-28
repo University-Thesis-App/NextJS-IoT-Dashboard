@@ -1,4 +1,5 @@
 import React from 'react';
+import App from 'next/app'
 import PropTypes from 'prop-types';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -189,11 +190,12 @@ function MyApp(props) {
   );
 }
 
+MyApp.getInitialProps = async (appContext) => {
+  // calls page's `getInitialProps` and fills `appProps.pageProps`
+  const appProps = await App.getInitialProps(appContext);
+  const isUserLoggedIn = isLoggedIn(appContext?.req?.headers?.cookie || '');
 
-MyApp.getInitialProps = (context) => {
-  const isUserLoggedIn = isLoggedIn(context?.req?.headers?.cookie || '');
-
-  return { isLoggedIn: isUserLoggedIn }
+  return { ...appProps, isLoggedIn: isUserLoggedIn }
 }
 
 MyApp.propTypes = {
