@@ -4,8 +4,8 @@ import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Grid, Paper, withStyles } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
 import { useState } from 'react';
+import { logIn } from '../auth'
 
 import api from '../api';
 
@@ -51,7 +51,7 @@ function Register({ classes }) {
         event.preventDefault();
         api.get('/sanctum/csrf-cookie').then(() => {
             api.post('/register', { name: fullName, email, password, password_confirmation: passwordConfirmation }).then(response => {
-                console.log(response);
+                logIn();
             }).catch(err => {
                 setErrors(err?.response?.data?.errors || {});
             })

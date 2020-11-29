@@ -86,7 +86,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 function MyApp(props) {
-  console.log(props);
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const { Component, pageProps } = props;

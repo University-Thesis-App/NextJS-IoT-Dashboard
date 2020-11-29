@@ -48,7 +48,6 @@ function Login({ classes }) {
                 .then(logIn)
                 .catch((error) => {
                     setError(true);
-                    console.log(error?.response?.data);
                 });
         });
     }
