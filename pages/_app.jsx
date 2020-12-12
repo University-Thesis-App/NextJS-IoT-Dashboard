@@ -12,7 +12,7 @@ import clsx from "clsx";
 import api from '../api';
 import { logOut } from '../auth'
 import { isLoggedIn } from '../auth'
-import Cookies from 'js-cookie'
+import Cookies, { set } from 'js-cookie'
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -80,16 +80,23 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 100,
   },
   layout: {
-    margin: `0 ${theme.spacing()}`
-  }
+    margin: `0 ${theme.spacing()}`,
+    flexGrow: 1,
+    // padding: theme.spacing(3),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+  },
+  appBarSpacer: theme.mixins.toolbar,
 }));
 
 
 function MyApp(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const { Component, pageProps } = props;
-  const isLoggedIn = React.useRef(false);
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -97,8 +104,8 @@ function MyApp(props) {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
-    isLoggedIn.current = !!Cookies.get('ticket_management_is_user_logged_in')
-  }, []);
+    setIsLoggedIn(!!Cookies.get('ticket_management_is_user_logged_in'));
+  });
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -182,7 +189,10 @@ function MyApp(props) {
               </List>
             </Drawer>
           </>}
-          <Component {...pageProps} />
+          <main className={classes.layout}>
+            <div className={classes.appBarSpacer} />
+            <Component {...pageProps} />
+          </main>
         </div>
       </ThemeProvider>
     </React.Fragment>

@@ -61,37 +61,18 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.toolbar,
     justifyContent: "flex-end"
   },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    marginLeft: -drawerWidth
-  },
   contentShift: {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
     }),
-    marginLeft: 0
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  layout: {
-    margin: `0 ${theme.spacing()}`
-  },
-  content: {
-    flexGrow: 1,
-    height: '100vh',
-    overflow: 'auto',
   },
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
   },
   paper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(4),
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column',
@@ -104,7 +85,6 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(),
   },
   refresh: {
-
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between'
@@ -182,8 +162,7 @@ function Home() {
   }
 
   return (
-    <main className={classes.content}>
-      <div className={classes.appBarSpacer} />
+    <>
       <Container maxWidth="lg" className={classes.container}>
 
         <Paper className={classes.actions}>
@@ -222,7 +201,7 @@ function Home() {
           })}
         </Grid>
       </Container>
-    </main >
+    </ >
   )
 }
 

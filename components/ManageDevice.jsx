@@ -14,7 +14,8 @@ const useStyles = makeStyles((theme) => ({
     root: {
         height: 300,
         flexGrow: 1,
-        minWidth: 300,
+        minWidth: 500,
+        width: 500,
         transform: 'translateZ(0)',
         '@media all and (-ms-high-contrast: none)': {
             display: 'none',
@@ -27,15 +28,23 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
     },
     paper: {
-        width: 400,
+        width: 600,
         backgroundColor: theme.palette.background.paper,
-        boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
     },
     variable: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignContent: 'center',
+        '& > *:first-child': {
+            marginRight: theme.spacing()
+        }
+    },
+    delete: {
+    },
+    create: {
+        marginTop: theme.spacing()
     }
 }));
 
@@ -44,7 +53,8 @@ const Input = ({ field, form: { errors }, placeholder }) => {
 
     return (
         <>
-            <TextField {...field} placeholder={placeholder} />
+            <TextField margin="normal"
+                fullWidth variant="outlined" {...field} placeholder={placeholder} />
             {errorMessage && <div style={{ color: "red" }}>{errorMessage}</div>}
         </>
     );
@@ -52,7 +62,9 @@ const Input = ({ field, form: { errors }, placeholder }) => {
 
 const initialValues = {
     name: '',
-    variables: [{ id: generate(), name: '', label: '', }]
+    variables: [{ id: generate(), name: '', label: '', }],
+    lat: '',
+    long: '',
 };
 
 export default function ManageDevice(props) {
@@ -113,7 +125,8 @@ export default function ManageDevice(props) {
                         {({ values, errors }) => (
                             <Form>
                                 <Field name="name" placeholder="Device name" component={Input} />
-
+                                <Field name="lat" placeholder="Latitude" component={Input} />
+                                <Field name="long" placeholder="Longitude" component={Input} />
                                 <FieldArray name="variables">
                                     {({ push, remove }) => (
                                         <div>
@@ -130,7 +143,7 @@ export default function ManageDevice(props) {
                                                             component={Input}
                                                             placeholder="Label"
                                                         />
-                                                        <div onClick={() => remove(index)}><Delete /></div>
+                                                        <Button className={classes.delete} onClick={() => remove(index)}><Delete /></Button>
                                                     </div>
                                                 );
                                             })}
@@ -139,6 +152,8 @@ export default function ManageDevice(props) {
                                                 onClick={() =>
                                                     push({ id: generate(), name: "", label: "" })
                                                 }
+                                                color="primary"
+                                                variant="outlined"
                                             >
                                                 Add new variable
                                             </Button>
@@ -146,7 +161,7 @@ export default function ManageDevice(props) {
                                     )}
                                 </FieldArray>
 
-                                <Button type="submit">{isCreate ? 'Create' : 'Update'} device</Button>
+                                <Button className={classes.create} variant="contained" color="primary" type="submit">{isCreate ? 'Create' : 'Update'} device</Button>
                             </Form>
                         )}
                     </Formik>

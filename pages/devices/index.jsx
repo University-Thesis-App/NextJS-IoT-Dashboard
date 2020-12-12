@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api';
 import { makeStyles } from '@material-ui/core/styles';
-import { Edit, Delete, Code } from '@material-ui/icons';
+import { Edit, Delete, Code, Map } from '@material-ui/icons';
 import withAuth from '../../components/withAuth';
 import Pagination from '@material-ui/lab/Pagination';
+import dynamic from 'next/dynamic'
 
 import {
     Button,
@@ -17,21 +18,24 @@ import {
 } from '@material-ui/core';
 import ManageDevice from '../../components/ManageDevice';
 import GenerateCode from '../../components/GenerateCode';
+const DeviceLocation = dynamic(() => import('../../components/DeviceLocation'), { ssr: false });
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     container: {
-        marginTop: 100
+        marginTop: 20,
+        padding: `0 ${theme.spacing(3)}px`
     },
     table: {
         minWidth: 650,
     },
-});
+}));
 
 function Devices() {
     const [devices, setDevices] = React.useState([]);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState(null);
     const [editDevice, setEditDevice] = useState(null);
+    const [selectedMapDevice, setSelectedMapDevice] = useState(null);
 
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(0);
@@ -97,6 +101,9 @@ function Devices() {
                                         setSelectedDevice(row)
                                     }}><Code /></Button>
                                     <Button onClick={() => {
+                                        setSelectedMapDevice(row)
+                                    }}><Map /></Button>
+                                    <Button onClick={() => {
                                         setEditDevice(row);
                                     }}><Edit /> </Button>
                                     <Button onClick={() => {
@@ -113,8 +120,8 @@ function Devices() {
             </TableContainer>
             { createModalOpen && <ManageDevice open={createModalOpen} handleClose={handleClose} />}
             { editDevice && <ManageDevice open={editDevice} device={editDevice} handleClose={handleClose} />}
-
             { selectedDevice && <GenerateCode open={selectedDevice} handleClose={() => setSelectedDevice(null)} />}
+            { selectedMapDevice && <DeviceLocation open={selectedMapDevice} handleClose={() => setSelectedMapDevice(null)} />}
         </div >
     );
 }
