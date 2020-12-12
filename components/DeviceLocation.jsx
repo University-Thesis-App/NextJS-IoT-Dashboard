@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Modal,
-    Button
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';

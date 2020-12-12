@@ -9,6 +9,9 @@ import withAuth from '../components/withAuth';
 import Link from 'next/link';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { Checkbox } from '@material-ui/core';
+import dynamic from 'next/dynamic'
+
+const Map = dynamic(() => import('../components/Map'), { ssr: false });
 
 const drawerWidth = 240;
 
@@ -98,6 +101,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     flexDirection: 'row'
   },
+  appBarSpacer: theme.mixins.toolbar,
 }));
 
 function Home() {
@@ -118,7 +122,8 @@ function Home() {
     setLoading(true);
     api.get('/api/devices').then((response) => {
       const formatted = response.data.data.map(device => {
-        const latestMetrics = device.latest_metrics.reduce((acc, metric) => {
+        // todo: find a better way to handle this on backend
+        const latestMetrics = device.latest_metrics.slice(0, 100).reduce((acc, metric) => {
           Object.keys(metric.values).forEach(v => {
             if (!Array.isArray(acc[v])) {
               acc[v] = [];
@@ -163,6 +168,8 @@ function Home() {
 
   return (
     <>
+      <div className={classes.appBarSpacer} />
+
       <Container maxWidth="lg" className={classes.container}>
 
         <Paper className={classes.actions}>
@@ -200,6 +207,9 @@ function Home() {
             ))
           })}
         </Grid>
+        <Paper className={classes.actions}>
+          {devices.length > 0 && <Map devices={devices} />}
+        </Paper>
       </Container>
     </ >
   )

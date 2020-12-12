@@ -28,6 +28,7 @@ const useStyles = makeStyles(theme => ({
     table: {
         minWidth: 650,
     },
+    appBarSpacer: theme.mixins.toolbar,
 }));
 
 function Devices() {
@@ -78,51 +79,56 @@ function Devices() {
     }
 
     return (
-        <div className={classes.container}>
-            <Button variant="contained" color="primary" onClick={() => { setCreateModalOpen(true) }}>Create new device</Button>
-            <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Token</TableCell>
-                            <TableCell align="right"></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {devices.map((row) => (
-                            <TableRow key={row.id}>
-                                <TableCell component="th">
-                                    {row.name}
-                                </TableCell>
-                                <TableCell >{row.token}</TableCell>
-                                <TableCell align="right">
-                                    <Button onClick={() => {
-                                        setSelectedDevice(row)
-                                    }}><Code /></Button>
-                                    <Button onClick={() => {
-                                        setSelectedMapDevice(row)
-                                    }}><Map /></Button>
-                                    <Button onClick={() => {
-                                        setEditDevice(row);
-                                    }}><Edit /> </Button>
-                                    <Button onClick={() => {
-                                        api.delete('/api/devices/' + row.id).then(() => {
-                                            setDevices(devices => devices.filter(device => device.id !== row.id));
-                                        })
-                                    }}><Delete /></Button>
-                                </TableCell>
+        <>
+            <div className={classes.appBarSpacer} />
+
+            <div className={classes.container}>
+
+                <Button variant="contained" color="primary" onClick={() => { setCreateModalOpen(true) }}>Create new device</Button>
+                <TableContainer component={Paper}>
+                    <Table className={classes.table} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Token</TableCell>
+                                <TableCell align="right"></TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                {pages > 1 && <Pagination count={pages} page={page} onChange={handlePageChange} />}
-            </TableContainer>
-            { createModalOpen && <ManageDevice open={createModalOpen} handleClose={handleClose} />}
-            { editDevice && <ManageDevice open={editDevice} device={editDevice} handleClose={handleClose} />}
-            { selectedDevice && <GenerateCode open={selectedDevice} handleClose={() => setSelectedDevice(null)} />}
-            { selectedMapDevice && <DeviceLocation open={selectedMapDevice} handleClose={() => setSelectedMapDevice(null)} />}
-        </div >
+                        </TableHead>
+                        <TableBody>
+                            {devices.map((row) => (
+                                <TableRow key={row.id}>
+                                    <TableCell component="th">
+                                        {row.name}
+                                    </TableCell>
+                                    <TableCell >{row.token}</TableCell>
+                                    <TableCell align="right">
+                                        <Button onClick={() => {
+                                            setSelectedDevice(row)
+                                        }}><Code /></Button>
+                                        <Button onClick={() => {
+                                            setSelectedMapDevice(row)
+                                        }}><Map /></Button>
+                                        <Button onClick={() => {
+                                            setEditDevice(row);
+                                        }}><Edit /> </Button>
+                                        <Button onClick={() => {
+                                            api.delete('/api/devices/' + row.id).then(() => {
+                                                setDevices(devices => devices.filter(device => device.id !== row.id));
+                                            })
+                                        }}><Delete /></Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    {pages > 1 && <Pagination count={pages} page={page} onChange={handlePageChange} />}
+                </TableContainer>
+                {createModalOpen && <ManageDevice open={createModalOpen} handleClose={handleClose} />}
+                {editDevice && <ManageDevice open={editDevice} device={editDevice} handleClose={handleClose} />}
+                {selectedDevice && <GenerateCode open={selectedDevice} handleClose={() => setSelectedDevice(null)} />}
+                {selectedMapDevice && <DeviceLocation open={selectedMapDevice} handleClose={() => setSelectedMapDevice(null)} />}
+            </div >
+        </>
     );
 }
 

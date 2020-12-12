@@ -88,7 +88,6 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen
     }),
   },
-  appBarSpacer: theme.mixins.toolbar,
 }));
 
 
@@ -190,7 +189,6 @@ function MyApp(props) {
             </Drawer>
           </>}
           <main className={classes.layout}>
-            <div className={classes.appBarSpacer} />
             <Component {...pageProps} />
           </main>
         </div>
