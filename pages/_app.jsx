@@ -179,12 +179,14 @@ function MyApp(props) {
                     <ListItemText primary={"Devices"} />
                   </ListItem>
                 </Link>
-                <ListItem button key={"Profile"}>
-                  <ListItemIcon>
-                    <Person />
-                  </ListItemIcon>
-                  <ListItemText primary={"Profile"} />
-                </ListItem>
+                <Link href="/profile">
+                  <ListItem button key={"Profile"}>
+                    <ListItemIcon>
+                      <Person />
+                    </ListItemIcon>
+                    <ListItemText primary={"Profile"} />
+                  </ListItem>
+                </Link>
               </List>
             </Drawer>
           </>}
