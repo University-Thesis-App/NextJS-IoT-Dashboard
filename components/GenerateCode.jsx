@@ -41,12 +41,6 @@ export default function GenerateCode(props) {
     const classes = useStyles();
 
     function copyToClipboard(text) {
-        // var dummy = document.createElement("input");
-        // document.body.appendChild(dummy);
-        // dummy.setAttribute('value', text);
-        // dummy.select();
-        // document.execCommand("copy");
-        // document.body.removeChild(dummy);
         navigator.clipboard.writeText(text);
     }
 

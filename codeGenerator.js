@@ -22,7 +22,7 @@ export default function generate(token, variables) {
     
     def post_request(payload):
         # Creates the headers for the HTTP requests
-        url = "http://192.168.69.212:8000/api/metrics/" + TOKEN
+        url = "${process.env.NEXT_PUBLIC_API_URL}/api/metrics/" + TOKEN
         headers = {"Content-Type": "application/json"}
     
         # Makes the HTTP requests

@@ -5,6 +5,7 @@ import { Edit, Delete, Code, Map } from '@material-ui/icons';
 import withAuth from '../../components/withAuth';
 import Pagination from '@material-ui/lab/Pagination';
 import dynamic from 'next/dynamic'
+import Link from 'next/link';
 
 import {
     Button,
@@ -98,7 +99,9 @@ function Devices() {
                             {devices.map((row) => (
                                 <TableRow key={row.id}>
                                     <TableCell component="th">
-                                        {row.name}
+                                        <Link href={`/devices/${row.id}`}>
+                                            {row.name}
+                                        </Link>
                                     </TableCell>
                                     <TableCell >{row.token}</TableCell>
                                     <TableCell align="right">
