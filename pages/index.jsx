@@ -124,13 +124,15 @@ function Home() {
       const formatted = response.data.data.map(device => {
         // todo: find a better way to handle this on backend
         const latestMetrics = device.latest_metrics.slice(0, 100).reduce((acc, metric) => {
-          Object.keys(metric.values).forEach(v => {
+          Object.keys(metric.values || {}).forEach(v => {
             if (!Array.isArray(acc[v])) {
               acc[v] = [];
             }
 
             const date = new Date(metric.date * 1000);
-            acc[v].push({ date: `${pad2(date.getHours())}:${pad2(date.getMinutes())}`, value: metric.values[v] })
+            if (v in metric.values) {
+              acc[v].push({ date: `${pad2(date.getHours())}:${pad2(date.getMinutes())}`, value: metric.values[v] })
+            }
           });
 
           return acc;
