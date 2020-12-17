@@ -97,7 +97,7 @@ function Metrics() {
                         {metrics.map((row) => (
                             <TableRow key={row.id}>
                                 <TableCell>{`${row.date.toDateString()} ${row.date.getHours()}:${row.date.getMinutes()}`}</TableCell>
-                                {Object.keys(row.values).map((key, index) => (<TableCell key={`${row.id}_${index}`}>{row.values[key]}</TableCell>))}
+                                {Object.keys(row.values || {}).map((key, index) => (<TableCell key={`${row.id}_${index}`}>{row.values[key]}</TableCell>))}
                             </TableRow>
                         ))}
                     </TableBody>
