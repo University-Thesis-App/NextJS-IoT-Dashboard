@@ -123,7 +123,7 @@ function Home() {
     api.get('/api/devices').then((response) => {
       const formatted = response.data.data.map(device => {
         // todo: find a better way to handle this on backend
-        const latestMetrics = device.latest_metrics.slice(0, 100).reduce((acc, metric) => {
+        const latestMetrics = device.latest_metrics.slice(0, 100).reverse().reduce((acc, metric) => {
           Object.keys(metric.values || {}).forEach(v => {
             if (!Array.isArray(acc[v])) {
               acc[v] = [];
